@@ -32,10 +32,20 @@
   .formula{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;background:#f5f6f7;padding:12px;border-radius:9px}
   @media(max-width:760px){.grid,.result{grid-template-columns:1fr 1fr}}
   @media(max-width:500px){.grid,.result{grid-template-columns:1fr}.wrap{margin:18px auto}}
+
+.navbar{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px}
+.navlink{display:inline-block;text-decoration:none;border:1px solid #d9e1e9;background:#fff;color:#344454;border-radius:9px;padding:9px 13px;font-weight:700;font-size:14px}
+.navlink.active{background:#1677ff;color:#fff;border-color:#1677ff}
 </style>
 </head>
 <body>
 <div class="wrap">
+
+<nav class="navbar" aria-label="工具導覽">
+  <a class="navlink active" href="index.html">📊 融資融券維持率</a>
+  <a class="navlink" href="warrant_calculator.html">📈 權證試算器</a>
+</nav>
+
   <h1>台股融資融券維持率計算器</h1>
   <div class="sub">輸入價格、張數與融資／融券條件，立即估算 130% 維持率追繳價格。</div>
 

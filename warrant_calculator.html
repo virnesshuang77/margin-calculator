@@ -1,0 +1,206 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>台股權證試算器</title>
+<style>
+*{box-sizing:border-box}body{margin:0;background:#f4f7fb;color:#17212b;font-family:system-ui,-apple-system,"Segoe UI","Noto Sans TC",Arial,sans-serif}
+.wrap{max-width:1180px;margin:auto;padding:20px 16px 40px}.nav{display:flex;gap:8px;margin-bottom:14px}.nav a{padding:9px 13px;border:1px solid #d7e0ea;border-radius:9px;background:#fff;text-decoration:none;color:#243647;font-weight:700}.nav a.active{background:#1677ff;color:#fff;border-color:#1677ff}
+header,.card{background:#fff;border:1px solid #dfe6ee;border-radius:15px}.head{padding:20px 24px;display:flex;justify-content:space-between;align-items:center}.brand{display:flex;gap:14px;align-items:center}.logo{font-size:38px}.head h1{margin:0;font-size:27px}.sub{color:#748392;font-size:14px;margin-top:4px}
+.grid{display:grid;grid-template-columns:2fr 1fr;gap:18px;margin-top:18px}.card{padding:18px;margin-bottom:18px}.card h2{font-size:19px;margin:0 0 15px}
+.searchrow{display:grid;grid-template-columns:1fr auto;gap:10px}.input{height:46px;border:1px solid #ccd7e2;border-radius:9px;padding:0 13px;font-size:16px;width:100%}.btn{height:46px;border:1px solid #d4dde7;border-radius:9px;padding:0 17px;background:#fff;font-weight:800;cursor:pointer}.btn.primary{background:#1677ff;color:#fff;border-color:#1677ff}.hint{font-size:12px;color:#7c8995;margin-top:6px}.status{margin-top:12px;padding:11px 13px;border-radius:9px;background:#eef5ff;color:#41698f;font-size:13px}.status.ok{background:#edf9f2;color:#187445}.status.err{background:#fff0f0;color:#a52a2a}
+.filters{display:flex;gap:8px;flex-wrap:wrap;margin-top:14px}.chip{border:1px solid #d8e0e8;border-radius:999px;background:#fff;padding:7px 11px;cursor:pointer}.chip.on{background:#e9f2ff;border-color:#7fb0ff;color:#1260c9;font-weight:700}
+.tablewrap{overflow:auto;margin-top:14px}.results{width:100%;border-collapse:collapse;min-width:720px}.results th,.results td{padding:10px 8px;border-bottom:1px solid #e7ebf0;text-align:right}.results th:first-child,.results td:first-child,.results th:nth-child(2),.results td:nth-child(2){text-align:left}.results th{background:#f5f8fb;color:#657583;font-size:13px}.results tr:hover{background:#f5f9ff}.selectbtn{border:0;background:#1677ff;color:#fff;border-radius:7px;padding:7px 10px;cursor:pointer;font-weight:700}
+.detail{display:none}.detail.show{display:block}.dl{display:grid;grid-template-columns:1fr auto;gap:10px 12px}.dl div:nth-child(odd){color:#74818d;font-size:13px}.dl div:nth-child(even){font-weight:700;text-align:right}.metrics{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-top:12px}.metric{background:#f7f9fb;border-radius:10px;padding:12px}.metric small{color:#788592}.metric strong{display:block;font-size:21px;margin-top:4px}
+.profit{width:100%;border-collapse:collapse;margin-top:12px}.profit th,.profit td{padding:9px;border-bottom:1px solid #e6ebf0;text-align:right}.profit th:first-child,.profit td:first-child{text-align:left}.green{color:#14864a}.red{color:#d7353f}.note{font-size:12px;color:#71808d;line-height:1.6}
+.warn{background:#fff7e8;border-color:#ffd68f}.empty{text-align:center;color:#7b8996;padding:25px}
+@media(max-width:850px){.grid{grid-template-columns:1fr}.metrics{grid-template-columns:1fr 1fr}}
+@media(max-width:520px){.searchrow{grid-template-columns:1fr}.head{padding:16px}.head h1{font-size:22px}}
+</style>
+</head>
+<body>
+<div class="wrap">
+<nav class="nav"><a href="index.html">📊 融資融券維持率</a><a class="active" href="warrant_calculator.html">📈 權證試算器</a></nav>
+
+<header class="head">
+  <div class="brand"><div class="logo">📈</div><div><h1>台股權證試算器</h1><div class="sub">先搜尋權證，再試算獲利；不要求你知道一堆專業欄位。</div></div></div>
+</header>
+
+<div class="grid">
+<main>
+<section class="card">
+<h2>🔎 找權證</h2>
+<div class="searchrow">
+  <input id="query" class="input" placeholder="輸入股票代號、股票名稱或權證代號，例如 2498、059185" value="2498">
+  <button class="btn primary" id="search">搜尋權證</button>
+</div>
+<div class="hint">你只要知道股票代號或權證代號即可；系統會從公開資料搜尋，不需要自己填履約價、行使比例、到期日。</div>
+<div id="status" class="status">準備載入公開權證資料…</div>
+<div class="filters">
+  <button class="chip on" data-kind="all">全部</button>
+  <button class="chip" data-kind="call">認購</button>
+  <button class="chip" data-kind="put">認售</button>
+</div>
+<div class="tablewrap">
+<table class="results"><thead><tr><th>權證</th><th>標的</th><th>類型</th><th>履約價</th><th>行使比例</th><th>到期日</th><th></th></tr></thead>
+<tbody id="results"><tr><td colspan="7" class="empty">按「搜尋權證」開始</td></tr></tbody></table>
+</div>
+</section>
+
+<section class="card detail" id="detail">
+<h2>🎯 你選擇的權證</h2>
+<div class="dl" id="details"></div>
+<hr style="border:0;border-top:1px solid #e7ebef;margin:18px 0">
+<h2>💰 你的投資</h2>
+<div class="metrics">
+<div class="metric"><small>買進價格</small><strong><input id="buy" class="input" value="0.12" type="number" step="0.01" min="0.01"></strong></div>
+<div class="metric"><small>數量（張）</small><strong><input id="lots" class="input" value="10" type="number" step="1" min="1"></strong></div>
+<div class="metric"><small>投入金額</small><strong id="invest">1,200</strong></div>
+<div class="metric"><small>標的股價</small><strong id="spot">—</strong></div>
+</div>
+<button class="btn primary" style="width:100%;margin-top:13px" id="calc">🧮 試算股票漲跌對權證的影響</button>
+<div class="tablewrap">
+<table class="profit"><thead><tr><th>標的價格</th><th>標的漲跌</th><th>情境權證價</th><th>損益</th><th>報酬率</th></tr></thead><tbody id="profitRows"></tbody></table>
+</div>
+<div class="note" style="margin-top:10px">情境權證價是敏感度估算，不是保證成交價。真正價格還會受到剩餘時間、IV、Delta、Gamma、造市報價與流動性影響。</div>
+</section>
+</main>
+
+<aside>
+<section class="card">
+<h2>📌 怎麼用？</h2>
+<ol class="note" style="padding-left:20px"><li>輸入股票代號或權證代號。</li><li>從搜尋結果選一檔。</li><li>只填你自己的買進價格與張數。</li><li>網站自動產生不同股價情境。</li></ol>
+</section>
+<section class="card warn">
+<h2>⚠️ 資料說明</h2>
+<p class="note">本版本優先使用證交所／櫃買中心公開 OpenAPI。上市權證資料由 TWSE OpenAPI 提供；上櫃權證則嘗試使用 TPEx OpenAPI。若官方 API 暫時無法由瀏覽器存取，頁面會明確提示，而不會偷偷使用假資料。</p>
+</section>
+<section class="card">
+<h2>🧠 為什麼不要求你填履約價？</h2>
+<p class="note">因為一般投資人不應該先理解所有 Greeks 才能使用工具。選定權證後，系統直接帶入履約價、行使比例、到期日等基本資料。</p>
+</section>
+</aside>
+</div>
+
+<div class="card"><div class="note"><b>資料來源：</b>臺灣證券交易所 OpenAPI、證券櫃檯買賣中心 OpenAPI。TWSE 官方 OpenAPI 提供「上市權證基本資料彙總表」；TPEx 官方 OpenAPI 也列有上櫃權證發行基本資料與收盤行情 API。官方資料僅供參考，實際行情與權證報價可能有延遲。</div></div>
+</div>
+
+<script>
+const state={all:[],kind:"all",selected:null};
+
+const TWSE="https://openapi.twse.com.tw/v1/opendata/t187ap37_L";
+const TPEX="https://www.tpex.org.tw/openapi/v1/tpex_warrant_issue";
+
+function text(o, aliases){
+  for(const a of aliases){
+    const k=Object.keys(o||{}).find(x=>x.toLowerCase().replace(/[^a-z0-9\u4e00-\u9fff]/g,"")===a.toLowerCase().replace(/[^a-z0-9\u4e00-\u9fff]/g,""));
+    if(k!=null && o[k]!=null && o[k]!=="") return String(o[k]).trim();
+  }
+  return "";
+}
+function pick(o, tests){
+  const keys=Object.keys(o||{});
+  for(const t of tests){
+    const k=keys.find(x=>t.test(x));
+    if(k && o[k]!=null && o[k]!=="") return String(o[k]).trim();
+  }
+  return "";
+}
+function normalize(o,market){
+  const code=text(o,["證券代號","權證代號","warrantcode","code","stock_id","securities_code"])||pick(o,[/權證.*代號/i,/證券.*代號/i,/warrant.*code/i]);
+  const name=text(o,["證券名稱","權證名稱","權證簡稱","簡稱","warrantname","name"])||pick(o,[/權證.*(名稱|簡稱)/,/證券.*名稱/i]);
+  const underlying=text(o,["標的證券代號","標的代號","標的證券","標的","underlyingcode","targetstockid"])||pick(o,[/標的.*代號/i,/underlying/i,/target.*stock/i]);
+  const underlyingName=text(o,["標的證券名稱","標的名稱","underlyingname","targetstockname"])||pick(o,[/標的.*名稱/i]);
+  const type=text(o,["權證類型","類型","認購認售","warrant_type","type"])||pick(o,[/權證.*類型/i,/認購|認售/]);
+  const strike=text(o,["履約價","履約價格","strikeprice","strike_price"])||pick(o,[/履約.*(價|價格)/i,/strike/i]);
+  const ratio=text(o,["行使比例","行使比率","exercise_ratio","exerciseratio"])||pick(o,[/行使.*(比例|比率)/i,/exercise.*ratio/i]);
+  const expiry=text(o,["到期日","expirationdate","expirydate"])||pick(o,[/到期日/i,/expiration|expiry/i]);
+  const last=text(o,["最後交易日","lasttradingdate"])||pick(o,[/最後.*交易日/i,/last.*trading/i]);
+  const issuer=text(o,["發行人","發行機構","issuer","issuername"])||pick(o,[/發行人|發行機構/i,/issuer/i]);
+  const kind=(/認售|put/i.test(type)?"put":/認購|call/i.test(type)?"call":"");
+  return {code,name,underlying,underlyingName,type,strike,ratio,expiry,last,issuer,market,kind,raw:o};
+}
+function dedupe(arr){const m=new Map();for(const x of arr){if(x.code)m.set(x.code,x)}return [...m.values()]}
+
+async function fetchJson(url){
+  const r=await fetch(url,{headers:{"Accept":"application/json"},cache:"no-store"});
+  if(!r.ok) throw new Error("HTTP "+r.status);
+  return r.json();
+}
+async function loadData(){
+  const status=document.getElementById("status");
+  status.textContent="正在取得 TWSE / TPEx 公開權證資料…";
+  const out=[];
+  const errors=[];
+  try{const d=await fetchJson(TWSE); const a=Array.isArray(d)?d:(d.data||[]); out.push(...a.map(x=>normalize(x,"TWSE")));}catch(e){errors.push("TWSE")}
+  try{const d=await fetchJson(TPEX); const a=Array.isArray(d)?d:(d.data||[]); out.push(...a.map(x=>normalize(x,"TPEx")));}catch(e){errors.push("TPEx")}
+  state.all=dedupe(out);
+  if(state.all.length){
+    status.className="status ok";
+    status.textContent=`已載入 ${state.all.length.toLocaleString()} 檔權證基本資料${errors.length?"；部分市場 API 暫時無法存取："+errors.join(", "):"。"}`;
+  }else{
+    status.className="status err";
+    status.textContent="目前無法從公開 API 取得權證資料。請稍後重試；本頁不會用假資料代替。";
+  }
+  search();
+}
+function search(){
+  const q=document.getElementById("query").value.trim().toLowerCase();
+  let arr=state.all.filter(x=>{
+    if(state.kind!=="all"&&x.kind!==state.kind)return false;
+    if(!q)return true;
+    return [x.code,x.name,x.underlying,x.underlyingName].join(" ").toLowerCase().includes(q);
+  });
+  arr=arr.slice(0,200);
+  const body=document.getElementById("results");
+  if(!arr.length){body.innerHTML='<tr><td colspan="7" class="empty">找不到符合的權證。可以試試股票代號（例如 2498）或直接輸入權證代號。</td></tr>';return}
+  body.innerHTML=arr.map((x,i)=>`<tr><td><b>${esc(x.code)}</b><br><span class="note">${esc(x.name)}</span></td><td>${esc(x.underlying)} ${esc(x.underlyingName)}</td><td>${esc(x.type||"—")}</td><td>${esc(x.strike||"—")}</td><td>${esc(x.ratio||"—")}</td><td>${esc(x.expiry||"—")}</td><td><button class="selectbtn" data-i="${i}">選這檔</button></td></tr>`).join("");
+  [...body.querySelectorAll(".selectbtn")].forEach((b)=>b.onclick=()=>selectWarrant(arr[Number(b.dataset.i)]));
+}
+function selectWarrant(x){
+  state.selected=x;
+  document.getElementById("detail").classList.add("show");
+  document.getElementById("details").innerHTML=[
+    ["權證代號",x.code],["權證名稱",x.name||"—"],["市場",x.market],["權證類型",x.type||"—"],
+    ["標的",`${x.underlying||"—"} ${x.underlyingName||""}`],["履約價",x.strike||"—"],
+    ["行使比例",x.ratio||"—"],["最後交易日",x.last||"—"],["到期日",x.expiry||"—"],["發行人",x.issuer||"—"]
+  ].map(([a,b])=>`<div>${esc(a)}</div><div>${esc(b)}</div>`).join("");
+  document.getElementById("spot").textContent="請在下方輸入／確認";
+  calculate();
+  document.getElementById("detail").scrollIntoView({behavior:"smooth",block:"start"});
+}
+function esc(s){return String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]))}
+function num(s){const v=parseFloat(String(s).replace(/,/g,""));return Number.isFinite(v)?v:0}
+function calculate(){
+  const x=state.selected;if(!x)return;
+  const buy=num(document.getElementById("buy").value), lots=Math.max(1,num(document.getElementById("lots").value)), invest=buy*lots*1000;
+  document.getElementById("invest").textContent=invest.toLocaleString("zh-TW",{maximumFractionDigits:0});
+  // For a selected warrant we need the underlying price and Delta for a high-quality forecast.
+  // If the official basic-data feed does not contain them, ask the user rather than inventing them.
+  const raw=x.raw||{};
+  const spot=num(text(raw,["標的證券收盤價","標的股票收盤價","標的收盤價","underlyingclose","targetclose"]))||num(pick(raw,[/標的.*收盤/i,/underlying.*close/i,/target.*close/i]));
+  const ratio=num(x.ratio);
+  document.getElementById("spot").textContent=spot?spot.toFixed(2):"未提供";
+  const rows=document.getElementById("profitRows");
+  if(!buy||!spot){rows.innerHTML='<tr><td colspan="5" class="empty">已選到權證，但官方基本資料沒有提供目前標的價格。這一欄不猜數字；之後可再接即時行情 API。</td></tr>';return}
+  const strike=num(x.strike), isPut=x.kind==="put";
+  const levels=[spot*.90,spot*.95,spot,spot*1.05,spot*1.10,spot*1.20,spot*1.30].map(v=>Math.round(v*100)/100);
+  // Intrinsic-value scenario only: conservative and transparent. It does not pretend to predict time value.
+  rows.innerHTML=levels.map(s=>{
+    const intrinsic=Math.max(0,isPut?(strike-s):(s-strike))*ratio;
+    const wp=Math.max(0.01,intrinsic);
+    const pnl=(wp-buy)*lots*1000, ret=invest?pnl/invest*100:0, ch=(s/spot-1)*100;
+    return `<tr><td>${s.toFixed(2)}</td><td class="${ch>=0?"green":"red"}">${ch>=0?"+":""}${ch.toFixed(2)}%</td><td>${wp.toFixed(2)}</td><td class="${pnl>=0?"green":"red"}">${pnl>=0?"+":""}${Math.round(pnl).toLocaleString("zh-TW")}</td><td class="${ret>=0?"green":"red"}">${ret>=0?"+":""}${ret.toFixed(2)}%</td></tr>`;
+  }).join("");
+}
+document.getElementById("search").onclick=search;
+document.getElementById("query").addEventListener("keydown",e=>{if(e.key==="Enter")search()});
+document.querySelectorAll(".chip").forEach(b=>b.onclick=()=>{document.querySelectorAll(".chip").forEach(x=>x.classList.remove("on"));b.classList.add("on");state.kind=b.dataset.kind;search()});
+document.getElementById("calc").onclick=calculate;
+document.getElementById("buy").oninput=calculate;
+document.getElementById("lots").oninput=calculate;
+loadData();
+</script>
+</body>
+</html>

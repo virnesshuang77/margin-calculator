@@ -31,6 +31,7 @@
             position: sticky;
             top: 0;
             backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
             z-index: 10;
         }
 
@@ -95,7 +96,7 @@
             border-radius: 999px;
             text-decoration: none;
             font-weight: 600;
-            transition: 0.2s;
+            transition: 0.2s ease;
         }
 
         .button-primary {
@@ -105,6 +106,7 @@
 
         .button-primary:hover {
             background: #005bb5;
+            transform: translateY(-1px);
         }
 
         .button-secondary {
@@ -114,6 +116,7 @@
 
         .button-secondary:hover {
             background: #d8d8dd;
+            transform: translateY(-1px);
         }
 
         .section {
@@ -147,7 +150,7 @@
             background: white;
             padding: 32px;
             border-radius: 22px;
-            box-shadow: 0 5px 20px rgba(0,0,0,0.05);
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.05);
         }
 
         .icon {
@@ -174,6 +177,7 @@
         .offline h2 {
             font-size: 45px;
             margin-bottom: 20px;
+            letter-spacing: -1px;
         }
 
         .offline p {
@@ -199,6 +203,12 @@
             margin-bottom: 30px;
         }
 
+        .download-note {
+            margin-top: 18px;
+            font-size: 14px;
+            color: #888;
+        }
+
         footer {
             background: #f5f5f7;
             text-align: center;
@@ -207,7 +217,12 @@
             font-size: 14px;
         }
 
+        footer p + p {
+            margin-top: 5px;
+        }
+
         @media (max-width: 600px) {
+
             .hero {
                 padding: 80px 20px 70px;
             }
@@ -220,8 +235,24 @@
                 padding: 75px 20px;
             }
 
+            .download {
+                padding: 75px 20px;
+            }
+
             .hero h1 {
                 letter-spacing: -2px;
+            }
+
+            .offline h2 {
+                font-size: 36px;
+            }
+
+            .section-title {
+                font-size: 34px;
+            }
+
+            .download h2 {
+                font-size: 34px;
             }
         }
     </style>
@@ -231,12 +262,20 @@
 
 <header>
     <div class="nav">
-        <div class="logo">MyAI</div>
 
-        <a href="#download">Download</a>
+        <div class="logo">
+            MyAI
+        </div>
+
+        <a href="#download">
+            Download
+        </a>
+
     </div>
 </header>
 
+
+<!-- HERO -->
 
 <section class="hero">
 
@@ -267,9 +306,13 @@
 </section>
 
 
+<!-- FEATURES -->
+
 <section class="section" id="features">
 
-    <h2 class="section-title">AI That Stays With You</h2>
+    <h2 class="section-title">
+        AI That Stays With You
+    </h2>
 
     <p class="section-subtitle">
         MyAI is designed for everyday questions and situations where
@@ -279,39 +322,74 @@
     <div class="features">
 
         <div class="card">
-            <div class="icon">🧠</div>
-            <h3>Local AI</h3>
+
+            <div class="icon">
+                🧠
+            </div>
+
+            <h3>
+                Local AI
+            </h3>
+
             <p>
                 MyAI runs a local language model directly on your device,
                 without sending every question to a cloud AI service.
             </p>
+
         </div>
 
+
         <div class="card">
-            <div class="icon">📡</div>
-            <h3>Works Offline</h3>
+
+            <div class="icon">
+                📡
+            </div>
+
+            <h3>
+                Works Offline
+            </h3>
+
             <p>
                 Once the AI model is installed, MyAI can generate answers
                 without an internet connection.
             </p>
+
         </div>
 
+
         <div class="card">
-            <div class="icon">🔒</div>
-            <h3>Private</h3>
+
+            <div class="icon">
+                🔒
+            </div>
+
+            <h3>
+                Private
+            </h3>
+
             <p>
                 Your conversations can be processed locally on your device,
                 helping keep your questions away from unnecessary cloud requests.
             </p>
+
         </div>
 
+
         <div class="card">
-            <div class="icon">⚡</div>
-            <h3>Simple</h3>
+
+            <div class="icon">
+                ⚡
+            </div>
+
+            <h3>
+                Simple
+            </h3>
+
             <p>
                 No complicated AI settings. Open MyAI, ask a question,
                 and get a concise answer.
             </p>
+
         </div>
 
     </div>
@@ -319,9 +397,13 @@
 </section>
 
 
+<!-- OFFLINE SECTION -->
+
 <section class="offline">
 
-    <h2>No Internet. No Problem.</h2>
+    <h2>
+        No Internet. No Problem.
+    </h2>
 
     <p>
         On a plane, in a tunnel, in a remote area, or simply without
@@ -331,9 +413,13 @@
 </section>
 
 
+<!-- DEVICE SECTION -->
+
 <section class="section">
 
-    <h2 class="section-title">Built for Your Device</h2>
+    <h2 class="section-title">
+        Built for Your Device
+    </h2>
 
     <p class="section-subtitle">
         MyAI uses an on-device language model instead of requiring
@@ -343,28 +429,54 @@
     <div class="features">
 
         <div class="card">
-            <div class="icon">📱</div>
-            <h3>On-Device</h3>
+
+            <div class="icon">
+                📱
+            </div>
+
+            <h3>
+                On-Device
+            </h3>
+
             <p>
                 AI inference happens locally on supported devices.
             </p>
+
         </div>
 
+
         <div class="card">
-            <div class="icon">💬</div>
-            <h3>Natural Conversations</h3>
+
+            <div class="icon">
+                💬
+            </div>
+
+            <h3>
+                Natural Conversations
+            </h3>
+
             <p>
                 Ask questions naturally and receive short,
                 direct answers.
             </p>
+
         </div>
 
+
         <div class="card">
-            <div class="icon">🌍</div>
-            <h3>Multilingual</h3>
+
+            <div class="icon">
+                🌍
+            </div>
+
+            <h3>
+                Multilingual
+            </h3>
+
             <p>
                 MyAI is designed to communicate in multiple languages.
             </p>
+
         </div>
 
     </div>
@@ -372,28 +484,41 @@
 </section>
 
 
+<!-- DOWNLOAD -->
+
 <section class="download" id="download">
 
-    <h2>Get MyAI</h2>
+    <h2>
+        Get MyAI
+    </h2>
 
     <p>
         Download the latest version of MyAI for Android.
     </p>
 
-    <!-- Replace this link with your GitHub Release URL -->
     <a class="button button-primary"
-       href="https://github.com/YOUR_USERNAME/YOUR_REPOSITORY/releases/latest">
+       href="https://github.com/virnesshuang77/margin-calculator/releases/download/v1.0.0/app-release.apk">
         Download for Android
     </a>
+
+    <p class="download-note">
+        Android 8.0 or later
+    </p>
 
 </section>
 
 
+<!-- FOOTER -->
+
 <footer>
 
-    <p>© 2026 MyAI. All rights reserved.</p>
+    <p>
+        © 2026 MyAI. All rights reserved.
+    </p>
 
-    <p>Local AI. Simple. Private. Offline.</p>
+    <p>
+        Local AI. Simple. Private. Offline.
+    </p>
 
 </footer>
 
